@@ -64,7 +64,7 @@ integrations:
 
          COLLECT_DB_LOCK_METRICS: false
          COLLECTION_LIST: ALL
-         CUSTOM_METRICS_CONFIG: "config/postgresql-custom-query.yml"
+         CUSTOM_METRICS_CONFIG: "/var/tmp/postgresql/postgresql-custom-query.yml"
          TIMEOUT:  10
        interval: 15s
        labels:
