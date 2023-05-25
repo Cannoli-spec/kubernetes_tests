@@ -1,0 +1,36 @@
+newrelic-infrastructure:
+  verboseLog: true
+  privileged: true
+  kubelet:
+    extraVolumeMounts:
+    - mountPath: /config
+      name: psql-vol
+    extraVolumes:
+    - name: psql-vol
+      configMap:
+        name: psql-config
+  integrations:
+    postgresql-config.yml:    
+      discovery:
+        command:
+          exec: /var/db/newrelic-infra/nri-discovery-kubernetes
+          match:
+            label.app: postgresql
+      integrations:
+        - name: nri-postgresql
+          env:
+            COLLECT_DB_LOCK_METRICS: false
+            COLLECTION_LIST: all
+            CUSTOM_METRICS_CONFIG: /config/postgresql-custom-query.yml
+            DATABASE: postgres
+            HOSTNAME: ${discovery.ip}
+            #HOSTNAME: psql-sample.localnet
+            PORT: 5432
+            USERNAME: admin
+            PASSWORD: psltest
+            TIMEOUT: 10
+          interval: 15s
+          inventory_source: config/postgresql
+          labels:
+            env: production
+            role: postgresql

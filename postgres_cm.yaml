@@ -1,27 +1,53 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: postgres-queries
+  name: psql-config
   namespace: newrelic
 data:
   postgresql-custom-query.yml: |
     queries:
 
-    - query: >-
-        SELECT
-        BG.checkpoints_timed AS scheduled_checkpoints_performed,
-        BG.checkpoints_req AS requested_checkpoints_performed,
-        BG.buffers_checkpoint AS buffers_written_during_checkpoint,
-        BG.buffers_clean AS buffers_written_by_background_writer,
-        BG.maxwritten_clean AS background_writer_stops,
-        BG.buffers_backend AS buffers_written_by_backend,
-        BG.buffers_alloc AS buffers_allocated
-        FROM pg_stat_bgwriter BG;
+      # Metric names are set to the column names in the query results
+      - query: >-
+          SELECT
+          BG.checkpoints_timed AS scheduled_checkpoints_performed,
+          BG.checkpoints_req AS requested_checkpoints_performed,
+          BG.buffers_checkpoint AS buffers_written_during_checkpoint,
+          BG.buffers_clean AS buffers_written_by_background_writer,
+          BG.maxwritten_clean AS background_writer_stops,
+          BG.buffers_backend AS buffers_written_by_backend,
+          BG.buffers_alloc AS buffers_allocated
+          FROM pg_stat_bgwriter BG;
 
-      metric_types:
-        buffers_allocated: rate
+        # database defaults to the auth database in the main config
+        database: postgres
 
-      sample_name: MyCustomSample
-  
+        # If not set explicitly here, metric type will default to
+        # 'gauge' for numbers and 'attribute' for strings
+        metric_types:
+          buffers_allocated: rate
 
+        # If unset, sample_name defaults to PostgresCustomSample
+        sample_name: PostgresCustomSample
 
+      - query: >-
+          SELECT
+          BG.checkpoints_timed AS scheduled_checkpoints_performed2,
+          BG.checkpoints_req AS requested_checkpoints_performed2,
+          BG.buffers_checkpoint AS buffers_written_during_checkpoint2,
+          BG.buffers_clean AS buffers_written_by_background_writer2,
+          BG.maxwritten_clean AS background_writer_stops2,
+          BG.buffers_backend AS buffers_written_by_backend2,
+          BG.buffers_alloc AS buffers_allocated2
+          FROM pg_stat_bgwriter BG;
+
+        # database defaults to the auth database in the main config
+        database: postgres
+
+        # If not set explicitly here, metric type will default to
+        # 'gauge' for numbers and 'attribute' for strings
+        metric_types:
+          buffers_allocated: rate
+
+        # If unset, sample_name defaults to PostgresCustomSample
+        sample_name: PostgresCustomSample2

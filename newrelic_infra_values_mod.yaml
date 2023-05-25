@@ -1,10 +1,6 @@
-ksm:
-  enabled: true
-kubeEvents:
-  enabled: true
-logging:
-  enabled: true
 newrelic-infrastructure:
+  verboseLog: true
+  privileged: true
   kubelet:
     extraVolumeMounts:
     - mountPath: /config
@@ -12,19 +8,14 @@ newrelic-infrastructure:
     extraVolumes:
     - name: psql-vol
       configMap:
-        name: psql-config  
-  common:
-    agentConfig:
-      enable_process_metrics: true
-  customAttributes:
-    env: sko-workshop
-  integrations:
+        name: psql-config
+  integrations:    
     postgresql-config.yml:    
       discovery:
         command:
-          exec: /var/db/newrelic-infra/nri-discovery-kubernetes
+          exec: /var/db/newrelic-infra/nri-discovery-kubernetes --port 10250 --tls
           match:
-            label.app: postgresql
+            label.app: postgres
       integrations:
         - name: nri-postgresql
           env:
@@ -42,7 +33,7 @@ newrelic-infrastructure:
           inventory_source: config/postgresql
           labels:
             env: production
-            role: postgresql    
+            role: postgresql
     nri-rabbitmq-workshop:
       discovery:
         command:
@@ -98,7 +89,6 @@ newrelic-logging:
         [FILTER]
             Name    grep
             Match   *
-            Exclude $kubernetes['namespace_name'] newrelic
             Exclude $kubernetes['namespace_name'] olm
             Exclude $kubernetes['namespace_name'] demo
             Exclude $kubernetes['namespace_name'] px-operator
@@ -106,4 +96,4 @@ newrelic-logging:
     criEnabled: true
     k8sLoggingExclude: "On"
 prometheus:
-  enabled: false
+  enabled: false            
