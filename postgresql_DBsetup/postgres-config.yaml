@@ -7,6 +7,6 @@ metadata:
     app: postgres
 data:
   POSTGRES_DB: postgresdb
-  POSTGRES_USER: admin
-  POSTGRES_PASSWORD: psltest
+  POSTGRES_USER: username
+  POSTGRES_PASSWORD: password
 
